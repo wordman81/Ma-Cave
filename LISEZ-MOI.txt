@@ -1,0 +1,22 @@
+MA CAVE À VINS — application autonome
+
+Contenu du dossier (à mettre en ligne tel quel, tous les fichiers ensemble) :
+  index.html              l'application
+  manifest.webmanifest    nom, icône et mode plein écran
+  sw.js                   fonctionnement hors connexion
+  icon-*.png, apple-touch-icon.png   icônes
+
+Mise en ligne gratuite avec GitHub Pages :
+ 1. Créez un compte sur github.com.
+ 2. « New repository », nom : ma-cave, visibilité : Public, puis « Create repository ».
+ 3. Lien « uploading an existing file » : déposez TOUS les fichiers de ce dossier
+    (pas le dossier lui-même), puis « Commit changes ».
+ 4. Settings > Pages > Branch : main, dossier / (root) > Save.
+ 5. Après 1 à 2 minutes, l'adresse s'affiche : https://VOTRE-NOM.github.io/ma-cave/
+
+Installation sur Android :
+ Ouvrez cette adresse dans Chrome > menu ⋮ > « Installer l'application »
+ (ou le bandeau « Installer » en bas de l'écran).
+
+Vos vins sont enregistrés sur le téléphone. Utilisez régulièrement
+« Exporter la cave » (en bas de l'application) pour garder une sauvegarde.
