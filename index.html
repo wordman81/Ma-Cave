@@ -61,6 +61,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .bottle{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow);cursor:pointer}
 .ico{flex:none;width:54px;height:54px;border-radius:16px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent)}
 .info{flex:1;min-width:0}
+.appel{font-size:13px;font-weight:600;color:var(--wine);margin:0 0 2px}
 .info h2{font:600 18px/1.25 Georgia,'Palatino Linotype',serif;margin:0 0 3px}
 .sub{font-size:14px;color:var(--mute)}
 .pill{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
@@ -84,6 +85,10 @@ label{display:block;font-size:13.5px;color:var(--mute);margin:12px 0 5px}
 .desc{font-size:13.5px;color:var(--mute);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .photo{display:grid;place-items:center;min-height:120px;margin-top:10px;border-radius:18px;background:var(--bg);border:1.5px dashed var(--line);color:var(--mute);text-align:center;padding:12px;cursor:pointer;overflow:hidden}
 .photo img{max-width:100%;max-height:220px;border-radius:12px}
+.pbtns{display:flex;gap:8px;margin-top:8px}
+.pbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;margin:0;padding:11px 8px;border-radius:14px;background:var(--bg);color:var(--wine);font-size:14px;font-weight:600;cursor:pointer;text-align:center}
+.pbtn.main{background:var(--wine);color:var(--onwine)}
+.pbtn svg{width:18px;height:18px;flex:none}
 .link{border:0;background:none;color:var(--late);padding:8px 0 0;cursor:pointer;font-size:14px}
 .weblink{display:block;text-align:center;margin-top:8px;padding:12px;border-radius:14px;background:var(--bg);color:var(--wine);font-weight:600;text-decoration:none}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--wine);outline-offset:2px}
@@ -99,7 +104,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 <body>
 <div class="wrap">
   <header class="hero"><p class="kicker">Ma cave</p><div class="big"><b id="sBot">0</b><span>bouteilles en cave</span></div><div class="mini"><div><b id="sRef">0</b><span>références</span></div><div><b id="sNow">0</b><span>à boire</span></div></div><p class="sync" id="sync" aria-live="polite"></p></header>
-  <input class="search" id="q" type="search" placeholder="Rechercher un nom, un domaine, une région" aria-label="Rechercher">
+  <input class="search" id="q" type="search" placeholder="Rechercher une appellation, un nom, un domaine…" aria-label="Rechercher">
   <div class="chips" id="chips"></div>
   <div class="sortbar"><label for="sort">Trier par</label>
     <select id="sort">
@@ -123,9 +128,15 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 
 <div class="sheet" id="sheet"><div class="panel" role="dialog" aria-modal="true" aria-labelledby="ttl">
   <h3 id="ttl">Ajouter un vin</h3>
-  <label class="photo" for="fPhoto"><img id="pPrev" alt="Photo du vin" hidden><span id="pTxt">Ajouter une photo de la bouteille ou de l'étiquette</span></label>
+  <label class="photo" for="fCam"><img id="pPrev" alt="Photo du vin" hidden><span id="pTxt">Touchez pour photographier la bouteille ou l'étiquette</span></label>
+  <div class="pbtns">
+    <label for="fCam" class="pbtn main"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg>Prendre une photo</label>
+    <label for="fPhoto" class="pbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>Choisir dans la galerie</label>
+  </div>
+  <input id="fCam" type="file" accept="image/*" capture="environment" hidden>
   <input id="fPhoto" type="file" accept="image/*" hidden>
   <button type="button" id="pDel" class="link" hidden>Retirer la photo</button>
+  <label for="fApp">Appellation</label><input id="fApp" placeholder="Saint-Émilion Grand Cru, Chablis…">
   <label for="fName">Nom de la cuvée</label><input id="fName">
   <label for="fDom">Domaine ou producteur</label><input id="fDom">
   <div class="row">
@@ -196,7 +207,7 @@ function render(){
   $('chips').innerHTML=types.map(function(t){return '<button class="chip" data-t="'+t+'" aria-pressed="'+(t===filter)+'">'+(COL[t]?'<i style="--c:'+COL[t]+'"></i>':'')+t+'</button>';}).join('');
   var items=bottles.filter(function(b){
     if(filter!=='Tous'&&b.type!==filter) return false;
-    return !q||[b.name,b.dom,b.reg,b.loc,b.desc].join(' ').toLowerCase().indexOf(q)>-1;
+    return !q||[b.app,b.name,b.dom,b.reg,b.loc,b.desc].join(' ').toLowerCase().indexOf(q)>-1;
   });
   var mode=$('sort').value;
   function cmp(a,b,asc){ // valeurs vides toujours en fin de liste
@@ -218,19 +229,19 @@ function render(){
   }
   $('list').innerHTML=items.map(function(b){
     var s=status(b);
-    return '<div class="bottle" data-id="'+b.id+'"><div class="ico" style="--c:'+COL[b.type]+'">'+(b.photo?'<img src="'+b.photo+'" alt="">':BOTTLE)+'</div><div class="info"><h2>'+esc(b.name||'Sans nom')+'</h2><div class="sub">'+esc([b.year,b.size,b.dom,b.reg].filter(Boolean).join(' \u00b7 '))+'</div>'+((b.loc||b.price!=null)?'<div class="sub">'+esc([b.loc,b.price!=null?String(b.price).replace('.',',')+' \u20ac':''].filter(Boolean).join(' \u00b7 '))+'</div>':'')+(b.desc?'<div class="desc">'+esc(b.desc)+'</div>':'')+(s?'<span class="pill" style="--c:'+s.c+'">'+s.t+'</span>':'')+'</div><div class="qty"><button data-a="minus" aria-label="Retirer une bouteille">\u2212</button><b>'+b.qty+'</b><button data-a="plus" aria-label="Ajouter une bouteille">+</button></div></div>';
+    return '<div class="bottle" data-id="'+b.id+'"><div class="ico" style="--c:'+COL[b.type]+'">'+(b.photo?'<img src="'+b.photo+'" alt="">':BOTTLE)+'</div><div class="info">'+(b.app?'<div class="appel">'+esc(b.app)+'</div>':'')+'<h2>'+esc(b.name||'Sans nom')+'</h2><div class="sub">'+esc([b.year,b.size,b.dom,b.reg].filter(Boolean).join(' \u00b7 '))+'</div>'+((b.loc||b.price!=null)?'<div class="sub">'+esc([b.loc,b.price!=null?String(b.price).replace('.',',')+' \u20ac':''].filter(Boolean).join(' \u00b7 '))+'</div>':'')+(b.desc?'<div class="desc">'+esc(b.desc)+'</div>':'')+(s?'<span class="pill" style="--c:'+s.c+'">'+s.t+'</span>':'')+'</div><div class="qty"><button data-a="minus" aria-label="Retirer une bouteille">\u2212</button><b>'+b.qty+'</b><button data-a="plus" aria-label="Ajouter une bouteille">+</button></div></div>';
   }).join('');
 }
 function num(v){var n=parseFloat(v);return isNaN(n)?null:n;}
 var photo=null;
 function setPhoto(d){photo=d||null;$('pPrev').hidden=!photo;if(photo)$('pPrev').src=photo;$('pTxt').hidden=!!photo;$('pDel').hidden=!photo;}
-$('fPhoto').onchange=function(){var file=this.files&&this.files[0];if(!file)return;var r=new FileReader();
-  r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,520/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);setPhoto(c.toDataURL('image/jpeg',.72));};im.src=r.result;};
+$('fCam').onchange=$('fPhoto').onchange=function(){var file=this.files&&this.files[0];if(!file)return;var r=new FileReader();
+  r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,800/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);setPhoto(c.toDataURL('image/jpeg',.72));};im.src=r.result;};
   r.readAsDataURL(file);this.value='';};
 $('pDel').onclick=function(){setPhoto(null);};
 $('webSearch').onclick=function(e){
   if(!$('fName').value.trim()){e.preventDefault();$('fName').focus();return;}
-  var q=[$('fName').value,$('fDom').value,$('fYear').value,'vin'].map(function(s){return String(s).trim();}).filter(Boolean).join(' ');
+  var q=[$('fApp').value,$('fName').value,$('fDom').value,$('fYear').value,'vin'].map(function(s){return String(s).trim();}).filter(Boolean).join(' ');
   this.href='https://www.google.com/search?q='+encodeURIComponent(q);
 };
 
@@ -280,7 +291,7 @@ function openSheet(b){
   $('ttl').textContent=b?'Modifier le vin':'Ajouter un vin';
   $('del').hidden=!b;
   var m=b||{qty:1,type:'Rouge'};
-  $('fName').value=m.name||''; $('fDom').value=m.dom||''; $('fYear').value=m.year||''; $('fType').value=m.type;
+  $('fApp').value=m.app||''; $('fName').value=m.name||''; $('fDom').value=m.dom||''; $('fYear').value=m.year||''; $('fType').value=m.type;
   $('fReg').value=m.reg||''; $('fQty').value=m.qty; $('fPrice').value=m.price==null?'':m.price;
   $('fFrom').value=m.from||''; $('fTo').value=m.to||''; $('fLoc').value=m.loc||''; $('fSize').value=m.size||'75 cl'; $('fDesc').value=m.desc||''; setPhoto(m.photo); $('fNote').value=m.note||''; micMsg('');
   $('sheet').classList.add('open'); $('fName').focus();
@@ -292,7 +303,7 @@ $('sheet').onclick=function(e){if(e.target===$('sheet'))closeSheet();};
 $('save').onclick=function(){
   var name=$('fName').value.trim();
   if(!name){$('fName').focus();return;}
-  var d={name:name,dom:$('fDom').value.trim(),year:num($('fYear').value),type:$('fType').value,reg:$('fReg').value.trim(),
+  var d={app:$('fApp').value.trim(),name:name,dom:$('fDom').value.trim(),year:num($('fYear').value),type:$('fType').value,reg:$('fReg').value.trim(),
     qty:Math.max(0,Math.floor(num($('fQty').value)||0)),price:num($('fPrice').value),from:num($('fFrom').value),to:num($('fTo').value),
     loc:$('fLoc').value.trim(),note:$('fNote').value.trim(),size:$('fSize').value,desc:$('fDesc').value.trim(),photo:photo};
   var id=editing;
