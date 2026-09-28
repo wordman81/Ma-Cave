@@ -114,6 +114,8 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
       <option value="yearDesc">Millésime (du plus récent)</option>
       <option value="priceAsc">Prix (croissant)</option>
       <option value="priceDesc">Prix (décroissant)</option>
+      <option value="app">Appellation (A à Z)</option>
+      <option value="reg">Région (A à Z)</option>
     </select>
   </div>
   <div id="list"></div>
@@ -155,7 +157,6 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <div><label for="fFrom">À boire dès</label><input id="fFrom" type="number" inputmode="numeric" placeholder="2025"></div>
     <div><label for="fTo">Jusqu'en</label><input id="fTo" type="number" inputmode="numeric" placeholder="2035"></div>
   </div>
-  <label for="fLoc">Emplacement</label><input id="fLoc" placeholder="Casier B, rangée 2">
   <div class="dhead"><label for="fDesc">Descriptif de la cuvée</label><button type="button" id="mic" class="mic" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg><span>Dicter</span></button></div>
   <textarea id="fDesc" rows="3" placeholder="Cépages, terroir, style du vin…"></textarea>
   <div class="micmsg" id="micMsg" aria-live="polite"></div>
@@ -207,9 +208,14 @@ function render(){
   $('chips').innerHTML=types.map(function(t){return '<button class="chip" data-t="'+t+'" aria-pressed="'+(t===filter)+'">'+(COL[t]?'<i style="--c:'+COL[t]+'"></i>':'')+t+'</button>';}).join('');
   var items=bottles.filter(function(b){
     if(filter!=='Tous'&&b.type!==filter) return false;
-    return !q||[b.app,b.name,b.dom,b.reg,b.loc,b.desc].join(' ').toLowerCase().indexOf(q)>-1;
+    return !q||[b.app,b.name,b.dom,b.reg,b.desc].join(' ').toLowerCase().indexOf(q)>-1;
   });
   var mode=$('sort').value;
+  function txt(a,b){ // ordre alphabétique français, champs vides en fin de liste
+    a=(a||'').trim();b=(b||'').trim();
+    if(!a&&!b) return 0; if(!a) return 1; if(!b) return -1;
+    return a.localeCompare(b,'fr',{sensitivity:'base'});
+  }
   function cmp(a,b,asc){ // valeurs vides toujours en fin de liste
     if(a==null&&b==null) return 0; if(a==null) return 1; if(b==null) return -1;
     return asc?a-b:b-a;
@@ -221,6 +227,8 @@ function render(){
     if(mode==='yearDesc') return cmp(a.year,b.year,false);
     if(mode==='priceAsc') return cmp(a.price,b.price,true);
     if(mode==='priceDesc') return cmp(a.price,b.price,false);
+    if(mode==='app') return txt(a.app,b.app)||txt(a.name,b.name);
+    if(mode==='reg') return txt(a.reg,b.reg)||txt(a.app,b.app)||txt(a.name,b.name);
     return 0;
   });
   if(!items.length){
@@ -229,7 +237,7 @@ function render(){
   }
   $('list').innerHTML=items.map(function(b){
     var s=status(b);
-    return '<div class="bottle" data-id="'+b.id+'"><div class="ico" style="--c:'+COL[b.type]+'">'+(b.photo?'<img src="'+b.photo+'" alt="">':BOTTLE)+'</div><div class="info">'+(b.app?'<div class="appel">'+esc(b.app)+'</div>':'')+'<h2>'+esc(b.name||'Sans nom')+'</h2><div class="sub">'+esc([b.year,b.size,b.dom,b.reg].filter(Boolean).join(' \u00b7 '))+'</div>'+((b.loc||b.price!=null)?'<div class="sub">'+esc([b.loc,b.price!=null?String(b.price).replace('.',',')+' \u20ac':''].filter(Boolean).join(' \u00b7 '))+'</div>':'')+(b.desc?'<div class="desc">'+esc(b.desc)+'</div>':'')+(s?'<span class="pill" style="--c:'+s.c+'">'+s.t+'</span>':'')+'</div><div class="qty"><button data-a="minus" aria-label="Retirer une bouteille">\u2212</button><b>'+b.qty+'</b><button data-a="plus" aria-label="Ajouter une bouteille">+</button></div></div>';
+    return '<div class="bottle" data-id="'+b.id+'"><div class="ico" style="--c:'+COL[b.type]+'">'+(b.photo?'<img src="'+b.photo+'" alt="">':BOTTLE)+'</div><div class="info">'+(b.app?'<div class="appel">'+esc(b.app)+'</div>':'')+'<h2>'+esc(b.name||'Sans nom')+'</h2><div class="sub">'+esc([b.year,b.size,b.dom,b.reg].filter(Boolean).join(' \u00b7 '))+'</div>'+(b.price!=null?'<div class="sub">'+esc(String(b.price).replace('.',',')+' \u20ac')+'</div>':'')+(b.desc?'<div class="desc">'+esc(b.desc)+'</div>':'')+(s?'<span class="pill" style="--c:'+s.c+'">'+s.t+'</span>':'')+'</div><div class="qty"><button data-a="minus" aria-label="Retirer une bouteille">\u2212</button><b>'+b.qty+'</b><button data-a="plus" aria-label="Ajouter une bouteille">+</button></div></div>';
   }).join('');
 }
 function num(v){var n=parseFloat(v);return isNaN(n)?null:n;}
@@ -293,7 +301,7 @@ function openSheet(b){
   var m=b||{qty:1,type:'Rouge'};
   $('fApp').value=m.app||''; $('fName').value=m.name||''; $('fDom').value=m.dom||''; $('fYear').value=m.year||''; $('fType').value=m.type;
   $('fReg').value=m.reg||''; $('fQty').value=m.qty; $('fPrice').value=m.price==null?'':m.price;
-  $('fFrom').value=m.from||''; $('fTo').value=m.to||''; $('fLoc').value=m.loc||''; $('fSize').value=m.size||'75 cl'; $('fDesc').value=m.desc||''; setPhoto(m.photo); $('fNote').value=m.note||''; micMsg('');
+  $('fFrom').value=m.from||''; $('fTo').value=m.to||''; $('fSize').value=m.size||'75 cl'; $('fDesc').value=m.desc||''; setPhoto(m.photo); $('fNote').value=m.note||''; micMsg('');
   $('sheet').classList.add('open'); $('fName').focus();
 }
 function closeSheet(){stopMic();micMsg('');$('sheet').classList.remove('open');}
@@ -305,7 +313,7 @@ $('save').onclick=function(){
   if(!name){$('fName').focus();return;}
   var d={app:$('fApp').value.trim(),name:name,dom:$('fDom').value.trim(),year:num($('fYear').value),type:$('fType').value,reg:$('fReg').value.trim(),
     qty:Math.max(0,Math.floor(num($('fQty').value)||0)),price:num($('fPrice').value),from:num($('fFrom').value),to:num($('fTo').value),
-    loc:$('fLoc').value.trim(),note:$('fNote').value.trim(),size:$('fSize').value,desc:$('fDesc').value.trim(),photo:photo};
+    note:$('fNote').value.trim(),size:$('fSize').value,desc:$('fDesc').value.trim(),photo:photo};
   var id=editing;
   if(id){var old=bottles.filter(function(b){return b.id===id;})[0];d.created=old?created(old):Date.now();bottles=bottles.map(function(b){return b.id===id?Object.assign({id:id},d):b;});}
   else{d.created=Date.now();id='b'+d.created;d.id=id;bottles.unshift(d);}
