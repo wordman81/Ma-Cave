@@ -75,6 +75,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .qty{flex:none;display:flex;align-items:center;gap:2px;background:var(--bg);border-radius:999px;padding:3px}
 .qty button{width:34px;height:34px;border:0;background:var(--card);border-radius:50%;cursor:pointer;font-size:18px;box-shadow:var(--shadow)}
 .qty b{min-width:28px;text-align:center;font-size:17px}
+.ghead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 4px 12px;padding-bottom:8px;font:700 21px/1.2 var(--serif,Georgia,serif);color:var(--wine);border-bottom:2px solid transparent;border-image:linear-gradient(90deg,var(--gold,var(--wine)),transparent) 1;text-shadow:0 0 8px var(--bg),0 0 3px var(--bg)}
+.ghead span{min-width:0;overflow-wrap:anywhere}
+.ghead small{flex:none;font:600 12.5px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--mute)}
+.grp:first-child .ghead{margin-top:4px}
 .empty{text-align:center;color:var(--mute);padding:48px 16px}
 .fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--wine);color:var(--onwine);border:0;border-radius:999px;padding:16px 28px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.35);cursor:pointer}
 .sheet{position:fixed;inset:0;background:rgba(10,4,8,.55);display:none;align-items:flex-end;justify-content:center;z-index:5}
@@ -171,6 +175,7 @@ body{background:var(--bg) radial-gradient(120% 60% at 50% -10%,color-mix(in srgb
       <option value="priceAsc">Prix (croissant)</option>
       <option value="priceDesc">Prix (décroissant)</option>
       <option value="app">Appellation (A à Z)</option>
+      <option value="country">Pays (A à Z)</option>
       <option value="reg">Région (A à Z)</option>
     </select>
   </div>
@@ -201,7 +206,11 @@ body{background:var(--bg) radial-gradient(120% 60% at 50% -10%,color-mix(in srgb
     <div><label for="fYear">Millésime</label><input id="fYear" type="number" inputmode="numeric" placeholder="2018"></div>
     <div><label for="fType">Couleur</label><select id="fType"><option>Rouge</option><option>Blanc</option><option>Rosé</option><option>Pétillant</option></select></div>
   </div>
-  <label for="fReg">Région</label><input id="fReg" placeholder="Bordeaux, Bourgogne…">
+  <div class="row">
+    <div><label for="fCountry">Pays</label><input id="fCountry" placeholder="France, Italie…" list="countries"></div>
+    <div><label for="fReg">Région</label><input id="fReg" placeholder="Bordeaux, Bourgogne…"></div>
+  </div>
+  <datalist id="countries"><option value="France"><option value="Italie"><option value="Espagne"><option value="Portugal"><option value="Allemagne"><option value="Autriche"><option value="Suisse"><option value="Belgique"><option value="Luxembourg"><option value="Grèce"><option value="Hongrie"><option value="Géorgie"><option value="Liban"><option value="États-Unis"><option value="Argentine"><option value="Chili"><option value="Afrique du Sud"><option value="Australie"><option value="Nouvelle-Zélande"></datalist>
   <div class="row">
     <div><label for="fQty">Quantité</label><input id="fQty" type="number" inputmode="numeric" min="0" value="1"></div>
     <div><label for="fSize">Contenance</label><select id="fSize"><option>37,5 cl</option><option selected>75 cl</option><option>150 cl (magnum)</option><option>300 cl (double magnum)</option><option>Autre</option></select></div>
@@ -281,7 +290,7 @@ function render(){
   $('chips').innerHTML=types.map(function(t){return '<button class="chip" data-t="'+t+'" aria-pressed="'+(t===filter)+'">'+(COL[t]?'<i style="--c:'+COL[t]+'"></i>':'')+t+'</button>';}).join('');
   var items=bottles.filter(function(b){
     if(filter!=='Tous'&&b.type!==filter) return false;
-    return !q||[b.app,b.name,b.dom,b.reg,b.desc].join(' ').toLowerCase().indexOf(q)>-1;
+    return !q||[b.app,b.name,b.dom,b.reg,b.country,b.desc].join(' ').toLowerCase().indexOf(q)>-1;
   });
   var mode=$('sort').value;
   function txt(a,b){ // ordre alphabétique français, champs vides en fin de liste
@@ -301,6 +310,7 @@ function render(){
     if(mode==='priceAsc') return cmp(a.price,b.price,true);
     if(mode==='priceDesc') return cmp(a.price,b.price,false);
     if(mode==='app') return txt(a.app,b.app)||txt(a.name,b.name);
+    if(mode==='country') return txt(a.country,b.country)||txt(a.reg,b.reg)||txt(a.app,b.app)||txt(a.name,b.name);
     if(mode==='reg') return txt(a.reg,b.reg)||txt(a.app,b.app)||txt(a.name,b.name);
     return 0;
   });
@@ -308,9 +318,35 @@ function render(){
     $('list').innerHTML='<div class="empty">'+(bottles.length?'Aucun vin ne correspond à cette recherche.':'Votre cave est vide. Touchez « Ajouter un vin » pour enregistrer votre première bouteille.')+'</div>';
     return;
   }
-  $('list').innerHTML=items.map(function(b){
+  var card=function(b){
     var s=status(b);
-    return '<div class="bottle" data-id="'+b.id+'" style="--c:'+COL[b.type]+'"><div class="ico">'+(b.photo?'<img src="'+b.photo+'" alt="">':BOTTLE)+'</div><div class="info">'+(b.app?'<div class="appel">'+esc(b.app)+'</div>':'')+'<h2>'+esc(b.name||'Sans nom')+'</h2><div class="sub">'+esc([b.year,b.size,b.dom,b.reg].filter(Boolean).join(' \u00b7 '))+'</div>'+((b.price!=null||b.cote!=null)?'<div class="sub">'+esc([b.price!=null?'Achat '+String(b.price).replace('.',',')+' \u20ac':'',b.cote!=null?'Cote '+String(b.cote).replace('.',',')+' \u20ac':''].filter(Boolean).join(' \u00b7 '))+'</div>':'')+(b.desc?'<div class="desc">'+esc(b.desc)+'</div>':'')+(s?'<span class="pill" style="--c:'+s.c+'">'+s.t+'</span>':'')+'</div><div class="qty"><button data-a="minus" aria-label="Retirer une bouteille">\u2212</button><b>'+b.qty+'</b><button data-a="plus" aria-label="Ajouter une bouteille">+</button></div></div>';
+    return '<div class="bottle" data-id="'+b.id+'" style="--c:'+COL[b.type]+'"><div class="ico">'+(b.photo?'<img src="'+b.photo+'" alt="">':BOTTLE)+'</div><div class="info">'+(b.app?'<div class="appel">'+esc(b.app)+'</div>':'')+'<h2>'+esc(b.name||'Sans nom')+'</h2><div class="sub">'+esc([b.year,b.size,b.dom,b.reg,b.country].filter(Boolean).join(' \u00b7 '))+'</div>'+((b.price!=null||b.cote!=null)?'<div class="sub">'+esc([b.price!=null?'Achat '+String(b.price).replace('.',',')+' \u20ac':'',b.cote!=null?'Cote '+String(b.cote).replace('.',',')+' \u20ac':''].filter(Boolean).join(' \u00b7 '))+'</div>':'')+(b.desc?'<div class="desc">'+esc(b.desc)+'</div>':'')+(s?'<span class="pill" style="--c:'+s.c+'">'+s.t+'</span>':'')+'</div><div class="qty"><button data-a="minus" aria-label="Retirer une bouteille">\u2212</button><b>'+b.qty+'</b><button data-a="plus" aria-label="Ajouter une bouteille">+</button></div></div>';
+  };
+  /* Titres de séparation selon le tri choisi */
+  var norm=function(t){return String(t).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');};
+  var group=function(b){
+    if(mode==='country') return b.country&&b.country.trim()?b.country.trim():'Pays non renseigné';
+    if(mode==='reg') return b.reg&&b.reg.trim()?b.reg.trim():'Région non renseignée';
+    if(mode==='app') return b.app&&b.app.trim()?b.app.trim():'Appellation non renseignée';
+    if(mode==='yearAsc'||mode==='yearDesc') return b.year?String(b.year):'Sans millésime';
+    if(mode==='apogee'){var st=status(b);if(!st)return 'Apogée non renseignée';return st.c==='var(--late)'?'Apogée dépassée':st.c==='var(--warn)'?'À garder':'À boire maintenant';}
+    return null;
+  };
+  if(mode==='apogee'){
+    var rank={'Apogée dépassée':0,'À boire maintenant':1,'À garder':2,'Apogée non renseignée':3};
+    items=items.map(function(b,i){return [b,i];}).sort(function(x,y){return rank[group(x[0])]-rank[group(y[0])]||x[1]-y[1];}).map(function(x){return x[0];});
+  }
+  if(group(items[0])===null){$('list').innerHTML=items.map(card).join('');return;}
+  var groups=[],cur=null;
+  items.forEach(function(b){
+    var g=group(b),k=norm(g);
+    if(!cur||cur.k!==k){cur={k:k,label:g,items:[]};groups.push(cur);}
+    cur.items.push(b);
+  });
+  $('list').innerHTML=groups.map(function(g){
+    var n=0;g.items.forEach(function(b){n+=b.qty||0;});
+    var r=g.items.length;
+    return '<section class="grp"><h3 class="ghead"><span>'+esc(g.label)+'</span><small>'+n+' bouteille'+(n>1?'s':'')+' \u00b7 '+r+' référence'+(r>1?'s':'')+'</small></h3>'+g.items.map(card).join('')+'</section>';
   }).join('');
 }
 function num(v){var n=parseFloat(v);return isNaN(n)?null:n;}
@@ -373,7 +409,7 @@ function openSheet(b){
   $('del').hidden=!b; $('dup').hidden=!b;
   var m=b||{qty:1,type:'Rouge'};
   $('fApp').value=m.app||''; $('fName').value=m.name||''; $('fDom').value=m.dom||''; $('fYear').value=m.year||''; $('fType').value=m.type;
-  $('fReg').value=m.reg||''; $('fQty').value=m.qty; $('fPrice').value=m.price==null?'':m.price; $('fCote').value=m.cote==null?'':m.cote;
+  $('fCountry').value=m.country||''; $('fReg').value=m.reg||''; $('fQty').value=m.qty; $('fPrice').value=m.price==null?'':m.price; $('fCote').value=m.cote==null?'':m.cote;
   $('fFrom').value=m.from||''; $('fTo').value=m.to||''; $('fSize').value=m.size||'75 cl'; $('fDesc').value=m.desc||''; setPhoto(m.photo); $('fNote').value=m.note||''; micMsg('');
   $('sheet').classList.add('open'); $('fName').focus();
 }
@@ -393,7 +429,7 @@ $('sheet').onclick=function(e){if(e.target===$('sheet'))closeSheet();};
 $('save').onclick=function(){
   var name=$('fName').value.trim();
   if(!name){$('fName').focus();return;}
-  var d={app:$('fApp').value.trim(),name:name,dom:$('fDom').value.trim(),year:num($('fYear').value),type:$('fType').value,reg:$('fReg').value.trim(),
+  var d={app:$('fApp').value.trim(),name:name,dom:$('fDom').value.trim(),year:num($('fYear').value),type:$('fType').value,country:$('fCountry').value.trim(),reg:$('fReg').value.trim(),
     qty:Math.max(0,Math.floor(num($('fQty').value)||0)),price:num($('fPrice').value),cote:num($('fCote').value),from:num($('fFrom').value),to:num($('fTo').value),
     note:$('fNote').value.trim(),size:$('fSize').value,desc:$('fDesc').value.trim(),photo:photo};
   var id=editing;
