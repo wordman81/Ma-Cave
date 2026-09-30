@@ -175,6 +175,7 @@ body{background:var(--bg) radial-gradient(120% 60% at 50% -10%,color-mix(in srgb
       <option value="priceAsc">Prix (croissant)</option>
       <option value="priceDesc">Prix (décroissant)</option>
       <option value="app">Appellation (A à Z)</option>
+      <option value="dom">Domaine (A à Z)</option>
       <option value="country">Pays (A à Z)</option>
       <option value="reg">Région (A à Z)</option>
     </select>
@@ -310,6 +311,7 @@ function render(){
     if(mode==='priceAsc') return cmp(a.price,b.price,true);
     if(mode==='priceDesc') return cmp(a.price,b.price,false);
     if(mode==='app') return txt(a.app,b.app)||txt(a.name,b.name);
+    if(mode==='dom') return txt(a.dom,b.dom)||txt(a.app,b.app)||txt(a.name,b.name)||cmp(a.year,b.year,true);
     if(mode==='country') return txt(a.country,b.country)||txt(a.reg,b.reg)||txt(a.app,b.app)||txt(a.name,b.name);
     if(mode==='reg') return txt(a.reg,b.reg)||txt(a.app,b.app)||txt(a.name,b.name);
     return 0;
@@ -325,6 +327,7 @@ function render(){
   /* Titres de séparation selon le tri choisi */
   var norm=function(t){return String(t).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');};
   var group=function(b){
+    if(mode==='dom') return b.dom&&b.dom.trim()?b.dom.trim():'Domaine non renseigné';
     if(mode==='country') return b.country&&b.country.trim()?b.country.trim():'Pays non renseigné';
     if(mode==='reg') return b.reg&&b.reg.trim()?b.reg.trim():'Région non renseignée';
     if(mode==='app') return b.app&&b.app.trim()?b.app.trim():'Appellation non renseignée';
@@ -340,7 +343,7 @@ function render(){
   var groups=[],cur=null;
   items.forEach(function(b){
     var g=group(b),k=norm(g);
-    if(!cur||cur.k!==k){cur={k:k,label:g,items:[]};groups.push(cur);}
+    if(!cur||cur.k!==k){cur={k:k,label:g.charAt(0).toUpperCase()+g.slice(1),items:[]};groups.push(cur);}
     cur.items.push(b);
   });
   $('list').innerHTML=groups.map(function(g){
