@@ -4,13 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ma cave à vins</title>
-<meta name="theme-color" content="#5B1730">
+<meta name="theme-color" content="#6B1633">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Ma cave">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F2F0F3;--card:#FFFFFF;--ink:#1E1519;--mute:#75696F;--line:#E6E1E5;--wine:#7A1F3D;--onwine:#FFFFFF;--hero:#5B1730;--ok:#22704E;--warn:#98570F;--late:#A32F3A;--shadow:0 1px 2px rgba(30,10,20,.06),0 10px 28px rgba(30,10,20,.07);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -39,6 +42,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .mini div{flex:1;background:rgba(255,255,255,.12);border-radius:14px;padding:10px 14px}
 .mini b{display:block;font-size:22px}
 .mini span{font-size:13px;opacity:.8}
+.mini.val{margin-top:10px}
+.mini.val b{font-size:19px}
+.valnote{margin:10px 2px 0;font-size:13px;opacity:.85}
+.valnote:empty{display:none}
 .search{width:100%;padding:14px 18px;border:0;border-radius:16px;background:var(--card);box-shadow:var(--shadow);margin-bottom:14px}
 .search::placeholder{color:var(--mute)}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:6px;scrollbar-width:none}
@@ -99,14 +106,60 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 :root{--wm:rgba(122,31,61,.27)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--wm:rgba(208,88,122,.3)}}
 :root[data-theme="dark"]{--wm:rgba(208,88,122,.3)}
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-color:var(--wm);-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280' fill='none' stroke='black' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg transform='translate%2830 22%29 rotate%28-12%29'%3E%3Cpath d='M0 0h26c0 16-5 25-13 25S0 16 0 0z'/%3E%3Cpath d='M2 9h22'/%3E%3Cpath d='M13 25v20M4 46h18'/%3E%3C/g%3E %3Cg transform='translate%28170 20%29 rotate%2810%29'%3E%3Cpath d='M20 0c2 6 0 10-4 12'/%3E%3Cpath d='M22 4c6-4 14-2 16 4-6 2-12 1-16-4z'/%3E %3Ccircle cx='8' cy='18' r='6'/%3E%3Ccircle cx='20' cy='18' r='6'/%3E%3Ccircle cx='32' cy='18' r='6'/%3E%3Ccircle cx='14' cy='29' r='6'/%3E%3Ccircle cx='26' cy='29' r='6'/%3E%3Ccircle cx='8' cy='40' r='6'/%3E%3Ccircle cx='20' cy='40' r='6'/%3E%3Ccircle cx='14' cy='51' r='6'/%3E%3C/g%3E %3Cg transform='translate%28118 110%29 rotate%28-24%29'%3E%3Cpath d='M8 0h8v12c0 3 8 7 8 16v42a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V28c0-9 8-13 8-16z'/%3E%3Crect x='3' y='38' width='18' height='16' rx='2'/%3E%3C/g%3E %3Cg transform='translate%2828 150%29 rotate%2815%29'%3E%3Cpath d='M25 50C8 44 0 30 4 18l8 4 0-12 10 8 3-14 3 14 10-8 0 12 8-4c4 12-4 26-21 32z'/%3E%3Cpath d='M25 50V14M25 36l-10-10M25 30l10-9'/%3E%3Cpath d='M25 50c0 8 3 12 8 14'/%3E%3C/g%3E %3Cg transform='translate%28200 170%29 rotate%28-30%29'%3E%3Cpath d='M16 0v6M4 6h24'/%3E%3Cpath d='M16 6v12'/%3E%3Cpath d='M16 18c6 2 6 6 0 8s-6 6 0 8 6 6 0 8-6 6 0 8'/%3E%3C/g%3E %3Cg transform='translate%28222 106%29 rotate%2820%29'%3E%3Crect x='0' y='0' width='14' height='24' rx='3'/%3E%3Cpath d='M3 6h8M3 12h8M3 18h8'/%3E%3C/g%3E %3Cg transform='translate%28150 232%29 rotate%28-8%29'%3E%3Cpath d='M0 0h22c0 12-4 20-11 20S0 12 0 0z'/%3E%3Cpath d='M11 20v14M4 34h14'/%3E%3C/g%3E %3Cg transform='translate%2880 70%29'%3E%3Ccircle cx='0' cy='0' r='4'/%3E%3Ccircle cx='8' cy='3' r='4'/%3E%3Ccircle cx='3' cy='10' r='4'/%3E%3C/g%3E %3Cg transform='translate%28250 250%29'%3E%3Ccircle cx='0' cy='0' r='4'/%3E%3Ccircle cx='8' cy='-3' r='4'/%3E%3C/g%3E %3Cg transform='translate%2892 238%29 rotate%2830%29'%3E%3Cpath d='M0 8c6-8 14-10 22-6-4 8-12 10-22 6z'/%3E%3Cpath d='M0 8c6-2 12-4 18-5'/%3E%3C/g%3E %3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg transform='translate%2830 22%29 rotate%28-12%29'%3E%3Cpath d='M0 0h26c0 16-5 25-13 25S0 16 0 0z'/%3E%3Cpath d='M2 9h22'/%3E%3Cpath d='M13 25v20M4 46h18'/%3E%3C/g%3E %3Cg transform='translate%28170 20%29 rotate%2810%29'%3E%3Cpath d='M20 0c2 6 0 10-4 12'/%3E%3Cpath d='M22 4c6-4 14-2 16 4-6 2-12 1-16-4z'/%3E %3Ccircle cx='8' cy='18' r='6'/%3E%3Ccircle cx='20' cy='18' r='6'/%3E%3Ccircle cx='32' cy='18' r='6'/%3E%3Ccircle cx='14' cy='29' r='6'/%3E%3Ccircle cx='26' cy='29' r='6'/%3E%3Ccircle cx='8' cy='40' r='6'/%3E%3Ccircle cx='20' cy='40' r='6'/%3E%3Ccircle cx='14' cy='51' r='6'/%3E%3C/g%3E %3Cg transform='translate%28118 110%29 rotate%28-24%29'%3E%3Cpath d='M8 0h8v12c0 3 8 7 8 16v42a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V28c0-9 8-13 8-16z'/%3E%3Crect x='3' y='38' width='18' height='16' rx='2'/%3E%3C/g%3E %3Cg transform='translate%2828 150%29 rotate%2815%29'%3E%3Cpath d='M25 50C8 44 0 30 4 18l8 4 0-12 10 8 3-14 3 14 10-8 0 12 8-4c4 12-4 26-21 32z'/%3E%3Cpath d='M25 50V14M25 36l-10-10M25 30l10-9'/%3E%3Cpath d='M25 50c0 8 3 12 8 14'/%3E%3C/g%3E %3Cg transform='translate%28200 170%29 rotate%28-30%29'%3E%3Cpath d='M16 0v6M4 6h24'/%3E%3Cpath d='M16 6v12'/%3E%3Cpath d='M16 18c6 2 6 6 0 8s-6 6 0 8 6 6 0 8-6 6 0 8'/%3E%3C/g%3E %3Cg transform='translate%28222 106%29 rotate%2820%29'%3E%3Crect x='0' y='0' width='14' height='24' rx='3'/%3E%3Cpath d='M3 6h8M3 12h8M3 18h8'/%3E%3C/g%3E %3Cg transform='translate%28150 232%29 rotate%28-8%29'%3E%3Cpath d='M0 0h22c0 12-4 20-11 20S0 12 0 0z'/%3E%3Cpath d='M11 20v14M4 34h14'/%3E%3C/g%3E %3Cg transform='translate%2880 70%29'%3E%3Ccircle cx='0' cy='0' r='4'/%3E%3Ccircle cx='8' cy='3' r='4'/%3E%3Ccircle cx='3' cy='10' r='4'/%3E%3C/g%3E %3Cg transform='translate%28250 250%29'%3E%3Ccircle cx='0' cy='0' r='4'/%3E%3Ccircle cx='8' cy='-3' r='4'/%3E%3C/g%3E %3Cg transform='translate%2892 238%29 rotate%2830%29'%3E%3Cpath d='M0 8c6-8 14-10 22-6-4 8-12 10-22 6z'/%3E%3Cpath d='M0 8c6-2 12-4 18-5'/%3E%3C/g%3E %3C/svg%3E");-webkit-mask-size:280px 280px;mask-size:280px 280px;-webkit-mask-repeat:repeat;mask-repeat:repeat}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-color:var(--wm);-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280' fill='none' stroke='black' stroke-width='2.7' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg transform='translate%2830 22%29 rotate%28-12%29'%3E%3Cpath d='M0 0h26c0 16-5 25-13 25S0 16 0 0z'/%3E%3Cpath d='M2 9h22'/%3E%3Cpath d='M13 25v20M4 46h18'/%3E%3C/g%3E %3Cg transform='translate%28170 20%29 rotate%2810%29'%3E%3Cpath d='M20 0c2 6 0 10-4 12'/%3E%3Cpath d='M22 4c6-4 14-2 16 4-6 2-12 1-16-4z'/%3E %3Ccircle cx='8' cy='18' r='6'/%3E%3Ccircle cx='20' cy='18' r='6'/%3E%3Ccircle cx='32' cy='18' r='6'/%3E%3Ccircle cx='14' cy='29' r='6'/%3E%3Ccircle cx='26' cy='29' r='6'/%3E%3Ccircle cx='8' cy='40' r='6'/%3E%3Ccircle cx='20' cy='40' r='6'/%3E%3Ccircle cx='14' cy='51' r='6'/%3E%3C/g%3E %3Cg transform='translate%28118 110%29 rotate%28-24%29'%3E%3Cpath d='M8 0h8v12c0 3 8 7 8 16v42a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V28c0-9 8-13 8-16z'/%3E%3Crect x='3' y='38' width='18' height='16' rx='2'/%3E%3C/g%3E %3Cg transform='translate%2828 150%29 rotate%2815%29'%3E%3Cpath d='M25 50C8 44 0 30 4 18l8 4 0-12 10 8 3-14 3 14 10-8 0 12 8-4c4 12-4 26-21 32z'/%3E%3Cpath d='M25 50V14M25 36l-10-10M25 30l10-9'/%3E%3Cpath d='M25 50c0 8 3 12 8 14'/%3E%3C/g%3E %3Cg transform='translate%28200 170%29 rotate%28-30%29'%3E%3Cpath d='M16 0v6M4 6h24'/%3E%3Cpath d='M16 6v12'/%3E%3Cpath d='M16 18c6 2 6 6 0 8s-6 6 0 8 6 6 0 8-6 6 0 8'/%3E%3C/g%3E %3Cg transform='translate%28222 106%29 rotate%2820%29'%3E%3Crect x='0' y='0' width='14' height='24' rx='3'/%3E%3Cpath d='M3 6h8M3 12h8M3 18h8'/%3E%3C/g%3E %3Cg transform='translate%28150 232%29 rotate%28-8%29'%3E%3Cpath d='M0 0h22c0 12-4 20-11 20S0 12 0 0z'/%3E%3Cpath d='M11 20v14M4 34h14'/%3E%3C/g%3E %3Cg transform='translate%2880 70%29'%3E%3Ccircle cx='0' cy='0' r='4'/%3E%3Ccircle cx='8' cy='3' r='4'/%3E%3Ccircle cx='3' cy='10' r='4'/%3E%3C/g%3E %3Cg transform='translate%28250 250%29'%3E%3Ccircle cx='0' cy='0' r='4'/%3E%3Ccircle cx='8' cy='-3' r='4'/%3E%3C/g%3E %3Cg transform='translate%2892 238%29 rotate%2830%29'%3E%3Cpath d='M0 8c6-8 14-10 22-6-4 8-12 10-22 6z'/%3E%3Cpath d='M0 8c6-2 12-4 18-5'/%3E%3C/g%3E %3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E %3Cg transform='translate%2830 22%29 rotate%28-12%29'%3E%3Cpath d='M0 0h26c0 16-5 25-13 25S0 16 0 0z'/%3E%3Cpath d='M2 9h22'/%3E%3Cpath d='M13 25v20M4 46h18'/%3E%3C/g%3E %3Cg transform='translate%28170 20%29 rotate%2810%29'%3E%3Cpath d='M20 0c2 6 0 10-4 12'/%3E%3Cpath d='M22 4c6-4 14-2 16 4-6 2-12 1-16-4z'/%3E %3Ccircle cx='8' cy='18' r='6'/%3E%3Ccircle cx='20' cy='18' r='6'/%3E%3Ccircle cx='32' cy='18' r='6'/%3E%3Ccircle cx='14' cy='29' r='6'/%3E%3Ccircle cx='26' cy='29' r='6'/%3E%3Ccircle cx='8' cy='40' r='6'/%3E%3Ccircle cx='20' cy='40' r='6'/%3E%3Ccircle cx='14' cy='51' r='6'/%3E%3C/g%3E %3Cg transform='translate%28118 110%29 rotate%28-24%29'%3E%3Cpath d='M8 0h8v12c0 3 8 7 8 16v42a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V28c0-9 8-13 8-16z'/%3E%3Crect x='3' y='38' width='18' height='16' rx='2'/%3E%3C/g%3E %3Cg transform='translate%2828 150%29 rotate%2815%29'%3E%3Cpath d='M25 50C8 44 0 30 4 18l8 4 0-12 10 8 3-14 3 14 10-8 0 12 8-4c4 12-4 26-21 32z'/%3E%3Cpath d='M25 50V14M25 36l-10-10M25 30l10-9'/%3E%3Cpath d='M25 50c0 8 3 12 8 14'/%3E%3C/g%3E %3Cg transform='translate%28200 170%29 rotate%28-30%29'%3E%3Cpath d='M16 0v6M4 6h24'/%3E%3Cpath d='M16 6v12'/%3E%3Cpath d='M16 18c6 2 6 6 0 8s-6 6 0 8 6 6 0 8-6 6 0 8'/%3E%3C/g%3E %3Cg transform='translate%28222 106%29 rotate%2820%29'%3E%3Crect x='0' y='0' width='14' height='24' rx='3'/%3E%3Cpath d='M3 6h8M3 12h8M3 18h8'/%3E%3C/g%3E %3Cg transform='translate%28150 232%29 rotate%28-8%29'%3E%3Cpath d='M0 0h22c0 12-4 20-11 20S0 12 0 0z'/%3E%3Cpath d='M11 20v14M4 34h14'/%3E%3C/g%3E %3Cg transform='translate%2880 70%29'%3E%3Ccircle cx='0' cy='0' r='4'/%3E%3Ccircle cx='8' cy='3' r='4'/%3E%3Ccircle cx='3' cy='10' r='4'/%3E%3C/g%3E %3Cg transform='translate%28250 250%29'%3E%3Ccircle cx='0' cy='0' r='4'/%3E%3Ccircle cx='8' cy='-3' r='4'/%3E%3C/g%3E %3Cg transform='translate%2892 238%29 rotate%2830%29'%3E%3Cpath d='M0 8c6-8 14-10 22-6-4 8-12 10-22 6z'/%3E%3Cpath d='M0 8c6-2 12-4 18-5'/%3E%3C/g%3E %3C/svg%3E");-webkit-mask-size:280px 280px;mask-size:280px 280px;-webkit-mask-repeat:repeat;mask-repeat:repeat}
 .wrap{position:relative;z-index:1}
 .fab{z-index:2}
+
+/* ——— Habillage chaleureux ——— */
+:root{--bg:#F6EEE3;--card:#FFFBF5;--ink:#2A1A17;--mute:#7C6A62;--line:#E7DACB;--wine:#8A1E3F;--onwine:#FFF8EE;--hero:#6B1633;--gold:#B8893A;--goldsoft:#E9D3A6;
+  --shadow:0 1px 2px rgba(80,30,20,.07),0 12px 30px rgba(110,40,30,.10);--wm:rgba(138,30,63,.5);--serif:'Playfair Display',Georgia,'Palatino Linotype',serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1A1211;--card:#271C1A;--ink:#F5EBE2;--mute:#B3A298;--line:#3A2C29;--wine:#E0708F;--onwine:#240F16;--hero:#4A1022;--gold:#DDB864;--goldsoft:#5A4524;--shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px rgba(0,0,0,.35);--wm:rgba(224,112,143,.42)}}
+:root[data-theme="dark"]{--bg:#1A1211;--card:#271C1A;--ink:#F5EBE2;--mute:#B3A298;--line:#3A2C29;--wine:#E0708F;--onwine:#240F16;--hero:#4A1022;--gold:#DDB864;--goldsoft:#5A4524;--shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px rgba(0,0,0,.35);--wm:rgba(224,112,143,.42)}
+body{background:var(--bg) radial-gradient(120% 60% at 50% -10%,color-mix(in srgb,var(--gold) 14%,transparent),transparent 70%) no-repeat}
+.hero{position:relative;overflow:hidden;color:#FFF6EA;background:
+  radial-gradient(90% 70% at 100% 0%,rgba(233,190,110,.30),transparent 60%),
+  radial-gradient(70% 60% at 0% 100%,rgba(255,120,150,.18),transparent 65%),
+  linear-gradient(145deg,#9B2447 0%,#6B1633 48%,#3E0B1E 100%);
+  box-shadow:0 18px 40px rgba(107,22,51,.35);border:1px solid rgba(233,190,110,.35)}
+.hero>*:not(.hdeco){position:relative}
+.hdeco{position:absolute;right:-14px;top:-8px;width:130px;height:160px;color:#F2D49A;opacity:.28;transform:rotate(14deg);pointer-events:none}
+.kicker{font:italic 500 21px var(--serif);color:#F2D49A;opacity:1;letter-spacing:.01em}
+.kicker::after{content:"";display:block;width:44px;height:2px;margin-top:8px;border-radius:2px;background:linear-gradient(90deg,#F2D49A,transparent)}
+.big b{font:700 66px/1 var(--serif);color:#FFE9C4;text-shadow:0 2px 14px rgba(0,0,0,.25)}
+.big span{opacity:.9}
+.mini div{background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.06));border:1px solid rgba(242,212,154,.25);backdrop-filter:blur(2px)}
+.mini b{font-family:var(--serif);color:#FFE9C4}
+.mini span{opacity:.88}
+.mini.val b{color:#F2D49A}
+.search{background:var(--card);border:1px solid var(--line)}
+.chip{background:var(--card);border:1px solid var(--line);font-weight:600}
+.chip i{box-shadow:0 0 0 3px color-mix(in srgb,var(--c,var(--mute)) 22%,transparent)}
+.chip[aria-pressed="true"]{background:linear-gradient(135deg,#A3284D,#6B1633);color:#FFF6EA;border-color:transparent;box-shadow:0 6px 16px rgba(107,22,51,.3)}
+.sortbar select{border:1px solid var(--line)}
+.bottle{position:relative;overflow:hidden;border:1px solid var(--line);padding-left:18px;transition:transform .15s ease,box-shadow .15s ease}
+.bottle::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(180deg,var(--c),color-mix(in srgb,var(--c) 55%,#000))}
+.bottle:active{transform:scale(.99)}
+.ico{background:linear-gradient(150deg,color-mix(in srgb,var(--c) 26%,transparent),color-mix(in srgb,var(--c) 8%,transparent));border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
+.appel{color:var(--gold);text-transform:uppercase;letter-spacing:.06em;font-size:11.5px;font-weight:700}
+.info h2{font-family:var(--serif);font-weight:700}
+.qty{background:color-mix(in srgb,var(--gold) 14%,var(--bg));border:1px solid color-mix(in srgb,var(--gold) 30%,transparent)}
+.qty b{font-family:var(--serif);font-weight:700}
+.fab{background:linear-gradient(135deg,#A3284D,#6B1633);color:#FFF6EA;box-shadow:0 10px 26px rgba(107,22,51,.45),0 0 0 3px color-mix(in srgb,var(--gold) 55%,transparent)}
+.panel{background:var(--card);border-top:3px solid var(--gold)}
+.panel h3,.backup h3{font-family:var(--serif);font-weight:700}
+.panel h3::after,.backup h3::after{content:"";display:block;width:40px;height:2px;margin-top:6px;border-radius:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.actions .save,.bkbtns button.main,.pbtn.main{background:linear-gradient(135deg,#A3284D,#6B1633);color:#FFF6EA}
+.backup{border:1px solid var(--line);background:linear-gradient(160deg,var(--card),color-mix(in srgb,var(--gold) 7%,var(--card)))}
+
+/* Filigrane visible à travers les fiches */
+.bottle,.search,.chip:not([aria-pressed="true"]),.sortbar select{background:color-mix(in srgb,var(--card) 76%,transparent)}
+.backup{background:linear-gradient(160deg,color-mix(in srgb,var(--card) 78%,transparent),color-mix(in srgb,var(--card) 70%,transparent))}
+.info h2,.sub,.appel{text-shadow:0 0 6px var(--card),0 0 2px var(--card)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="hero"><p class="kicker">Ma cave</p><div class="big"><b id="sBot">0</b><span>bouteilles en cave</span></div><div class="mini"><div><b id="sRef">0</b><span>références</span></div><div><b id="sNow">0</b><span>à boire</span></div></div><p class="sync" id="sync" aria-live="polite"></p></header>
+  <header class="hero"><svg class="hdeco" viewBox="0 0 120 150" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M62 6c3 10 0 18-7 22"/><path d="M64 14c12-8 30-4 36 8-14 5-28 2-36-8z"/><path d="M64 14c10 0 20 2 28 7"/><g fill="currentColor" fill-opacity=".18"><circle cx="38" cy="38" r="11"/><circle cx="60" cy="38" r="11"/><circle cx="82" cy="40" r="11"/><circle cx="48" cy="58" r="11"/><circle cx="70" cy="59" r="11"/><circle cx="36" cy="78" r="11"/><circle cx="58" cy="79" r="11"/><circle cx="80" cy="80" r="11"/><circle cx="46" cy="99" r="11"/><circle cx="68" cy="100" r="11"/><circle cx="57" cy="120" r="11"/></g></svg><p class="kicker">Ma cave</p><div class="big"><b id="sBot">0</b><span>Bouteilles en cave</span></div><div class="mini"><div><b id="sRef">0</b><span>Références</span></div><div><b id="sNow">0</b><span>À boire</span></div></div><div class="mini val"><div><b id="sBuy">–</b><span>Valeur d’achat</span></div><div><b id="sCote">–</b><span>Cote actuelle</span></div></div><p class="valnote" id="sVal"></p><p class="sync" id="sync" aria-live="polite"></p></header>
   <input class="search" id="q" type="search" placeholder="Rechercher une appellation, un nom, un domaine…" aria-label="Rechercher">
   <div class="chips" id="chips"></div>
   <div class="sortbar"><label for="sort">Trier par</label>
@@ -148,13 +201,14 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <div><label for="fYear">Millésime</label><input id="fYear" type="number" inputmode="numeric" placeholder="2018"></div>
     <div><label for="fType">Couleur</label><select id="fType"><option>Rouge</option><option>Blanc</option><option>Rosé</option><option>Pétillant</option></select></div>
   </div>
+  <label for="fReg">Région</label><input id="fReg" placeholder="Bordeaux, Bourgogne…">
   <div class="row">
-    <div><label for="fReg">Région</label><input id="fReg" placeholder="Bordeaux, Bourgogne…"></div>
+    <div><label for="fQty">Quantité</label><input id="fQty" type="number" inputmode="numeric" min="0" value="1"></div>
     <div><label for="fSize">Contenance</label><select id="fSize"><option>37,5 cl</option><option selected>75 cl</option><option>150 cl (magnum)</option><option>300 cl (double magnum)</option><option>Autre</option></select></div>
   </div>
   <div class="row">
-    <div><label for="fQty">Quantité</label><input id="fQty" type="number" inputmode="numeric" min="0" value="1"></div>
-    <div><label for="fPrice">Prix d'achat (€)</label><input id="fPrice" type="number" inputmode="decimal" min="0"></div>
+    <div><label for="fPrice">Prix d'achat (€)</label><input id="fPrice" type="number" inputmode="decimal" min="0" step="0.01"></div>
+    <div><label for="fCote">Cote actuelle (€)</label><input id="fCote" type="number" inputmode="decimal" min="0" step="0.01"></div>
   </div>
   <div class="row">
     <div><label for="fFrom">À boire dès</label><input id="fFrom" type="number" inputmode="numeric" placeholder="2025"></div>
@@ -208,6 +262,21 @@ function render(){
   var q=$('q').value.trim().toLowerCase(), total=0, now=0;
   bottles.forEach(function(b){total+=b.qty; var s=status(b); if(s&&s.c!=='var(--warn)') now+=b.qty;});
   $('sBot').textContent=total; $('sRef').textContent=bottles.length; $('sNow').textContent=now;
+  var buy=0,cote=0,noBuy=0,noCote=0,both=0,bothBuy=0,bothCote=0;
+  bottles.forEach(function(b){
+    if(!b.qty)return;
+    if(b.price!=null)buy+=b.price*b.qty;else noBuy++;
+    if(b.cote!=null)cote+=b.cote*b.qty;else noCote++;
+    if(b.price!=null&&b.cote!=null){bothBuy+=b.price*b.qty;bothCote+=b.cote*b.qty;both++;}
+  });
+  var eur=function(v){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:v<1000?2:0,minimumFractionDigits:0}).format(v);};
+  $('sBuy').textContent=buy||noBuy<bottles.filter(function(b){return b.qty;}).length?eur(buy):'–';
+  $('sCote').textContent=cote||noCote<bottles.filter(function(b){return b.qty;}).length?eur(cote):'–';
+  var notes=[];
+  if(both&&bothBuy>0){var diff=bothCote-bothBuy,pc=Math.round(diff/bothBuy*100);notes.push((diff>=0?'Plus-value : +':'Moins-value : −')+eur(Math.abs(diff))+' ('+(diff>=0?'+':'−')+Math.abs(pc)+' %)'+(both<bottles.filter(function(b){return b.qty;}).length?' sur les vins ayant les deux montants':''));}
+  var miss=[];if(noBuy)miss.push(noBuy+' sans prix d’achat');if(noCote)miss.push(noCote+' sans cote');
+  if(miss.length&&(buy||cote))notes.push('Références en cave : '+miss.join(', ')+'.');
+  $('sVal').textContent=notes.join(' · ');
   var types=['Tous','Rouge','Blanc','Rosé','Pétillant'];
   $('chips').innerHTML=types.map(function(t){return '<button class="chip" data-t="'+t+'" aria-pressed="'+(t===filter)+'">'+(COL[t]?'<i style="--c:'+COL[t]+'"></i>':'')+t+'</button>';}).join('');
   var items=bottles.filter(function(b){
@@ -241,7 +310,7 @@ function render(){
   }
   $('list').innerHTML=items.map(function(b){
     var s=status(b);
-    return '<div class="bottle" data-id="'+b.id+'"><div class="ico" style="--c:'+COL[b.type]+'">'+(b.photo?'<img src="'+b.photo+'" alt="">':BOTTLE)+'</div><div class="info">'+(b.app?'<div class="appel">'+esc(b.app)+'</div>':'')+'<h2>'+esc(b.name||'Sans nom')+'</h2><div class="sub">'+esc([b.year,b.size,b.dom,b.reg].filter(Boolean).join(' \u00b7 '))+'</div>'+(b.price!=null?'<div class="sub">'+esc(String(b.price).replace('.',',')+' \u20ac')+'</div>':'')+(b.desc?'<div class="desc">'+esc(b.desc)+'</div>':'')+(s?'<span class="pill" style="--c:'+s.c+'">'+s.t+'</span>':'')+'</div><div class="qty"><button data-a="minus" aria-label="Retirer une bouteille">\u2212</button><b>'+b.qty+'</b><button data-a="plus" aria-label="Ajouter une bouteille">+</button></div></div>';
+    return '<div class="bottle" data-id="'+b.id+'" style="--c:'+COL[b.type]+'"><div class="ico">'+(b.photo?'<img src="'+b.photo+'" alt="">':BOTTLE)+'</div><div class="info">'+(b.app?'<div class="appel">'+esc(b.app)+'</div>':'')+'<h2>'+esc(b.name||'Sans nom')+'</h2><div class="sub">'+esc([b.year,b.size,b.dom,b.reg].filter(Boolean).join(' \u00b7 '))+'</div>'+((b.price!=null||b.cote!=null)?'<div class="sub">'+esc([b.price!=null?'Achat '+String(b.price).replace('.',',')+' \u20ac':'',b.cote!=null?'Cote '+String(b.cote).replace('.',',')+' \u20ac':''].filter(Boolean).join(' \u00b7 '))+'</div>':'')+(b.desc?'<div class="desc">'+esc(b.desc)+'</div>':'')+(s?'<span class="pill" style="--c:'+s.c+'">'+s.t+'</span>':'')+'</div><div class="qty"><button data-a="minus" aria-label="Retirer une bouteille">\u2212</button><b>'+b.qty+'</b><button data-a="plus" aria-label="Ajouter une bouteille">+</button></div></div>';
   }).join('');
 }
 function num(v){var n=parseFloat(v);return isNaN(n)?null:n;}
@@ -304,7 +373,7 @@ function openSheet(b){
   $('del').hidden=!b; $('dup').hidden=!b;
   var m=b||{qty:1,type:'Rouge'};
   $('fApp').value=m.app||''; $('fName').value=m.name||''; $('fDom').value=m.dom||''; $('fYear').value=m.year||''; $('fType').value=m.type;
-  $('fReg').value=m.reg||''; $('fQty').value=m.qty; $('fPrice').value=m.price==null?'':m.price;
+  $('fReg').value=m.reg||''; $('fQty').value=m.qty; $('fPrice').value=m.price==null?'':m.price; $('fCote').value=m.cote==null?'':m.cote;
   $('fFrom').value=m.from||''; $('fTo').value=m.to||''; $('fSize').value=m.size||'75 cl'; $('fDesc').value=m.desc||''; setPhoto(m.photo); $('fNote').value=m.note||''; micMsg('');
   $('sheet').classList.add('open'); $('fName').focus();
 }
@@ -325,7 +394,7 @@ $('save').onclick=function(){
   var name=$('fName').value.trim();
   if(!name){$('fName').focus();return;}
   var d={app:$('fApp').value.trim(),name:name,dom:$('fDom').value.trim(),year:num($('fYear').value),type:$('fType').value,reg:$('fReg').value.trim(),
-    qty:Math.max(0,Math.floor(num($('fQty').value)||0)),price:num($('fPrice').value),from:num($('fFrom').value),to:num($('fTo').value),
+    qty:Math.max(0,Math.floor(num($('fQty').value)||0)),price:num($('fPrice').value),cote:num($('fCote').value),from:num($('fFrom').value),to:num($('fTo').value),
     note:$('fNote').value.trim(),size:$('fSize').value,desc:$('fDesc').value.trim(),photo:photo};
   var id=editing;
   if(id){var old=bottles.filter(function(b){return b.id===id;})[0];d.created=old?created(old):Date.now();bottles=bottles.map(function(b){return b.id===id?Object.assign({id:id},d):b;});}
