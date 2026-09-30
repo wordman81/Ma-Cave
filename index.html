@@ -78,6 +78,9 @@ label{display:block;font-size:13.5px;color:var(--mute);margin:12px 0 5px}
 .panel input,.panel select,.panel textarea{width:100%;padding:12px 14px;border:0;border-radius:14px;background:var(--bg)}
 .row{display:flex;gap:10px}.row>div{flex:1}
 .actions{display:flex;gap:10px;margin-top:22px}
+.dup{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;padding:13px;border:1.5px dashed color-mix(in srgb,var(--wine) 45%,transparent);border-radius:16px;background:transparent;color:var(--wine);font-weight:700;cursor:pointer}
+.dup svg{width:18px;height:18px}
+.dup + .actions{margin-top:12px}
 .actions button{flex:1;padding:14px;border-radius:16px;border:0;background:var(--bg);cursor:pointer}
 .actions .save{background:var(--wine);color:var(--onwine);font-weight:700}
 .actions .del{color:var(--late)}
@@ -157,13 +160,14 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <div><label for="fFrom">À boire dès</label><input id="fFrom" type="number" inputmode="numeric" placeholder="2025"></div>
     <div><label for="fTo">Jusqu'en</label><input id="fTo" type="number" inputmode="numeric" placeholder="2035"></div>
   </div>
-  <div class="dhead"><label for="fDesc">Descriptif de la cuvée</label><button type="button" id="mic" class="mic" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg><span>Dicter</span></button></div>
-  <textarea id="fDesc" rows="3" placeholder="Cépages, terroir, style du vin…"></textarea>
+  <div class="dhead"><label for="fDesc">Encépagement</label><button type="button" id="mic" class="mic" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg><span>Dicter</span></button></div>
+  <textarea id="fDesc" rows="3" placeholder="Merlot 70 %, Cabernet franc 30 %…"></textarea>
   <div class="micmsg" id="micMsg" aria-live="polite"></div>
   <a id="webSearch" class="weblink" href="#" target="_blank" rel="noopener noreferrer">Rechercher ce vin sur le web</a>
   <div class="dhead"><label for="fNote">Notes de dégustation</label><button type="button" id="micN" class="mic" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg><span>Dicter</span></button></div>
   <textarea id="fNote" rows="3"></textarea>
   <div class="micmsg" id="micMsgN" aria-live="polite"></div>
+  <button type="button" id="dup" class="dup" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>Dupliquer pour un autre millésime</button>
   <div class="actions">
     <button id="cancel">Annuler</button>
     <button id="del" class="del" hidden>Supprimer</button>
@@ -253,7 +257,7 @@ $('webSearch').onclick=function(e){
   this.href='https://www.google.com/search?q='+encodeURIComponent(q);
 };
 
-/* Dictée vocale (descriptif et notes) */
+/* Dictée vocale (encépagement et notes) */
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition, rec=null, active=null;
 var MICS=[{btn:'mic',field:'fDesc',msg:'micMsg'},{btn:'micN',field:'fNote',msg:'micMsgN'}];
 function micMsg(h,m){(m?[m]:MICS).forEach(function(x){$(x.msg).innerHTML=h||'';});}
@@ -297,7 +301,7 @@ if(SR){
 function openSheet(b){
   editing=b?b.id:null;
   $('ttl').textContent=b?'Modifier le vin':'Ajouter un vin';
-  $('del').hidden=!b;
+  $('del').hidden=!b; $('dup').hidden=!b;
   var m=b||{qty:1,type:'Rouge'};
   $('fApp').value=m.app||''; $('fName').value=m.name||''; $('fDom').value=m.dom||''; $('fYear').value=m.year||''; $('fType').value=m.type;
   $('fReg').value=m.reg||''; $('fQty').value=m.qty; $('fPrice').value=m.price==null?'':m.price;
@@ -306,6 +310,15 @@ function openSheet(b){
 }
 function closeSheet(){stopMic();micMsg('');$('sheet').classList.remove('open');}
 $('add').onclick=function(){openSheet(null);};
+$('dup').onclick=function(){ // même vin, nouveau millésime : on garde la fiche, on vide ce qui dépend de l'année
+  stopMic();micMsg('');
+  editing=null;
+  $('ttl').textContent='Nouveau millésime';
+  $('del').hidden=true;$('dup').hidden=true;
+  $('fYear').value='';$('fFrom').value='';$('fTo').value='';$('fNote').value='';$('fQty').value=1;
+  $('sheet').querySelector('.panel')&&($('sheet').querySelector('.panel').scrollTop=0);
+  $('fYear').focus();
+};
 $('cancel').onclick=closeSheet;
 $('sheet').onclick=function(e){if(e.target===$('sheet'))closeSheet();};
 $('save').onclick=function(){
